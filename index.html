@@ -128,6 +128,14 @@
     background: transparent; color: var(--danger); font-size: 12px; cursor: pointer;
   }
   #clear-filters:hover { background: rgba(220, 38, 38, .08); }
+  .toolbar-right { display: flex; align-items: center; gap: 10px; }
+  #refresh-btn.spinning { animation: spin 1s linear infinite; }
+  .icon-btn:disabled { opacity: .55; cursor: default; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .live-tag {
+    font-size: 11px; padding: 1px 7px; border-radius: 999px;
+    background: var(--accent-weak); color: var(--accent); font-weight: 600;
+  }
 
   #cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
 
@@ -213,9 +221,9 @@
       <input id="search" type="search" placeholder="搜索名称 / 描述 / 标签 / 备注…" autocomplete="off">
     </div>
     <select id="sort" title="排序方式">
+      <option value="pushed" selected>最近更新</option>
       <option value="added">最近添加</option>
       <option value="stars">Star 最多</option>
-      <option value="pushed">最近更新</option>
       <option value="name">名称 A-Z</option>
     </select>
     <button id="theme-btn" class="icon-btn" title="切换主题">🔄</button>
@@ -241,7 +249,11 @@
   <main>
     <div class="toolbar">
       <span id="result-count" class="meta"></span>
-      <button id="clear-filters" hidden>清除筛选</button>
+      <span class="toolbar-right">
+        <span id="sync-status" class="meta"></span>
+        <button id="refresh-btn" class="icon-btn" title="强制刷新 GitHub 数据">🔄</button>
+        <button id="clear-filters" hidden>清除筛选</button>
+      </span>
     </div>
     <div id="cards"></div>
     <div id="empty" hidden>
@@ -265,9 +277,36 @@
     "deprecated": { label: "弃用" }
   };
 
-  const state = { q: "", status: "", category: "", tags: new Set(), sort: "added" };
+  const state = { q: "", status: "", category: "", tags: new Set(), sort: "pushed" };
 
   const $ = id => document.getElementById(id);
+
+  // ---------------- GitHub 实时数据 ----------------
+  const GH_CACHE_KEY = "ot-gh-cache";   // localStorage：etag + 数据 + 抓取时间
+  const GH_TTL = 60 * 60 * 1000;        // 缓存有效期 1 小时
+  const GH_POOL = 5;                    // 请求并发数
+  let ghRateLimited = false;            // 本轮是否遇到限额（403/429）
+
+  let ghCache = {};
+  try { ghCache = JSON.parse(localStorage.getItem(GH_CACHE_KEY) || "{}"); } catch { ghCache = {}; }
+  const saveGhCache = () => { try { localStorage.setItem(GH_CACHE_KEY, JSON.stringify(ghCache)); } catch {} };
+
+  const live = new Map();               // owner/repo → 实时数据（展示层叠加，不回写快照）
+
+  // 从仓库 URL 解析 owner/repo，非 GitHub 地址返回 null
+  function ghKey(url) {
+    const m = String(url || "").match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/#?]+)/i);
+    return m ? `${m[1]}/${m[2]}`.replace(/\.git$/i, "") : null;
+  }
+
+  // 展示用有效数据：实时值优先，回退 tools.js 快照
+  function effGh(t) {
+    if (!t.github) return null;
+    const key = ghKey(t.url);
+    const d = key && live.get(key);
+    if (d) return { ...d, isLive: true };
+    return { ...t.github, isLive: false };
+  }
 
   // ---------------- 工具函数 ----------------
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
@@ -276,6 +315,33 @@
   const fmtStars = n => n >= 1000
     ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k"
     : String(n ?? "");
+
+  // 相对时间：刚刚 / x 分钟前 / x 小时前 / x 天前 / x 个月前 / x 年前
+  function relTime(v) {
+    const d = v ? new Date(v) : null;
+    if (!d || isNaN(d)) return "";
+    const diff = Date.now() - d.getTime();
+    if (diff < 60 * 1000) return "刚刚";
+    const min = Math.floor(diff / 60000);
+    if (min < 60) return `${min} 分钟前`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr} 小时前`;
+    const day = Math.floor(hr / 24);
+    if (day < 30) return `${day} 天前`;
+    const mon = Math.floor(day / 30);
+    if (mon < 12) return `${mon} 个月前`;
+    return `${Math.floor(mon / 12)} 年前`;
+  }
+
+  // 具体时间：实时值（ISO 含时分）转本地 "YYYY-MM-DD HH:MM"，快照日期原样显示
+  function fmtDateTime(v) {
+    if (!v) return "—";
+    if (!v.includes("T")) return v;
+    const d = new Date(v);
+    if (isNaN(d)) return v;
+    const p = n => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
 
   const isActive = t => {
     if (state.category && t.category !== state.category) return false;
@@ -294,10 +360,11 @@
 
   function sortTools(list) {
     const pin = t => (t.pinned ? 0 : 1);
+    const gh = t => effGh(t) || {};
     const cmp = {
       added:  (a, b) => String(b.addedAt || "").localeCompare(String(a.addedAt || "")),
-      stars:  (a, b) => ((b.github && b.github.stars) || 0) - ((a.github && a.github.stars) || 0),
-      pushed: (a, b) => String(b.github && b.github.lastPush || "").localeCompare(String(a.github && a.github.lastPush || "")),
+      stars:  (a, b) => (gh(b).stars || 0) - (gh(a).stars || 0),
+      pushed: (a, b) => String(gh(b).lastPush || "").localeCompare(String(gh(a).lastPush || "")),
       name:   (a, b) => String(a.name).localeCompare(String(b.name))
     }[state.sort];
     return [...list].sort((a, b) => pin(a) - pin(b) || cmp(a, b));
@@ -340,11 +407,15 @@
   }
 
   function renderCard(t) {
-    const gh = t.github || null;
+    const gh = effGh(t);
     const meta = [];
-    if (gh) meta.push(`⭐ ${fmtStars(gh.stars)}`);
-    if (gh && gh.language) meta.push(esc(gh.language));
-    if (gh && gh.license) meta.push(esc(gh.license));
+    if (gh) {
+      meta.push(`⭐ ${fmtStars(gh.stars)}`);
+      if (gh.language) meta.push(esc(gh.language));
+      if (gh.license) meta.push(esc(gh.license));
+      const rel = relTime(gh.lastPush);
+      if (rel) meta.push(`更新于 ${esc(rel)}`);
+    }
     const st = STATUS_META[t.status] || { label: t.status };
 
     const tagBtns = (t.tags || []).map(tag =>
@@ -358,11 +429,11 @@
     }
     rows.push(`<div class="kv"><span class="k">添加于</span><span class="v">${esc(t.addedAt || "—")}</span></div>`);
     if (gh) {
-      rows.push(`<div class="kv"><span class="k">最近推送</span><span class="v">${esc(gh.lastPush || "—")}</span></div>`);
-      rows.push(`<div class="kv"><span class="k">数据同步</span><span class="v">${esc(gh.syncedAt || "—")}</span></div>`);
+      rows.push(`<div class="kv"><span class="k">最近推送</span><span class="v">${esc(fmtDateTime(gh.lastPush))}${gh.isLive ? ` <span class="live-tag">实时</span>` : ""}</span></div>`);
+      rows.push(`<div class="kv"><span class="k">数据同步</span><span class="v">${esc(t.github.syncedAt || "—")}（快照）</span></div>`);
     }
 
-    return `<details class="card">
+    return `<details class="card" data-key="${esc(t.url)}">
       <summary>
         <div class="card-top">
           <span class="card-name">${esc(t.name)}</span>
@@ -387,8 +458,12 @@
 
   function render() {
     renderFilters();
+    const openKeys = [...document.querySelectorAll("#cards details.card[open]")].map(d => d.dataset.key);
     const list = sortTools(TOOLS.filter(isActive));
     $("cards").innerHTML = list.map(renderCard).join("");
+    for (const d of $("cards").querySelectorAll("details.card")) {
+      if (openKeys.includes(d.dataset.key)) d.open = true;
+    }
     $("empty").hidden = list.length !== 0;
     $("result-count").textContent =
       list.length === TOOLS.length
@@ -407,9 +482,90 @@
     $("footer").textContent = `共收录 ${TOOLS.length} 个工具` + (synced ? ` · GitHub 数据同步于 ${synced}` : "");
   }
 
+  // ---------------- GitHub 同步流程 ----------------
+  function setSyncStatus(text, busy = false) {
+    $("sync-status").textContent = text;
+    $("refresh-btn").classList.toggle("spinning", busy);
+    $("refresh-btn").disabled = busy;
+  }
+
+  // 合并多次完成后的重绘，避免频繁抖动
+  function scheduleRender() {
+    if (scheduleRender._t) return;
+    scheduleRender._t = setTimeout(() => { scheduleRender._t = null; render(); }, 120);
+  }
+
+  function apiData(json) {
+    return {
+      stars: json.stargazers_count,
+      language: json.language || "",
+      license: (json.license && json.license.spdx_id) || "",
+      topics: (json.topics || []).slice(0, 6),
+      lastPush: json.pushed_at || "",
+      archived: !!json.archived
+    };
+  }
+
+  // 拉取单个仓库：TTL 内用缓存 → ETag 条件请求（304 不耗限额）→ 全量 GET
+  async function refreshOne(key, force) {
+    const cached = ghCache[key];
+    if (!force && cached && cached.data && Date.now() - cached.fetchedAt < GH_TTL) {
+      live.set(key, { ...cached.data, fetchedAt: cached.fetchedAt });
+      return "cache";
+    }
+    const headers = {};
+    if (cached && cached.etag) headers["If-None-Match"] = cached.etag;
+    const res = await fetch(`https://api.github.com/repos/${key}`, { headers, cache: "no-cache" });
+    if (res.status === 304 && cached && cached.data) {
+      cached.fetchedAt = Date.now();
+      live.set(key, { ...cached.data, fetchedAt: cached.fetchedAt });
+      return "304";
+    }
+    if (res.status === 403 || res.status === 429) {   // 限额耗尽，终止本轮
+      ghRateLimited = true;
+      return "limited";
+    }
+    if (!res.ok) return "fail";
+    const etag = res.headers.get("etag") || "";
+    const data = apiData(await res.json());
+    ghCache[key] = { etag, fetchedAt: Date.now(), data };
+    live.set(key, { ...data, fetchedAt: ghCache[key].fetchedAt });
+    return "ok";
+  }
+
+  async function refreshAll(force = false) {
+    const keys = [...new Set(TOOLS.filter(t => t.github).map(t => ghKey(t.url)).filter(Boolean))];
+    if (!keys.length) { setSyncStatus("无 GitHub 工具，无需同步"); return; }
+    if (!navigator.onLine) { setSyncStatus("当前离线，已用快照"); return; }
+
+    ghRateLimited = false;
+    setSyncStatus("同步中…", true);
+    let idx = 0, done = 0, okCount = 0;
+    const worker = async () => {
+      while (idx < keys.length && !ghRateLimited) {
+        const key = keys[idx++];
+        try {
+          const r = await refreshOne(key, force);
+          if (r !== "fail" && r !== "limited") okCount++;
+        } catch { /* 网络错误，跳过该仓库 */ }
+        done++;
+        scheduleRender();
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(GH_POOL, keys.length) }, worker));
+    saveGhCache();
+    render();
+    const p = n => String(n).padStart(2, "0");
+    const now = `${p(new Date().getHours())}:${p(new Date().getMinutes())}`;
+    if (ghRateLimited) setSyncStatus(`GitHub 限额，已同步 ${okCount}/${keys.length}，其余用快照`);
+    else if (okCount === keys.length) setSyncStatus(`已同步 ${now} · ${keys.length}/${keys.length}`);
+    else setSyncStatus(`已同步 ${okCount}/${keys.length}，其余用快照`);
+  }
+
   // ---------------- 事件 ----------------
   $("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
   $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
+  $("refresh-btn").addEventListener("click", () => refreshAll(true));
 
   $("status-chips").addEventListener("click", e => {
     const btn = e.target.closest("[data-status]");
@@ -470,6 +626,7 @@
   applyTheme();
   renderFooter();
   render();
+  setTimeout(() => refreshAll(), 1000);   // 先渲染快照，随后静默实时同步
 </script>
 </body>
 </html>
