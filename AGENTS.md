@@ -29,6 +29,8 @@
   name: "WuPage Translator",        // 项目常用名（非仓库名时用官方名）
   url: "https://github.com/...",    // 仓库地址（必填）
   homepage: "https://...",          // 官网 / 在线服务，没有则 ""
+  logo: "assets/logos/fzf.png",     // 工具图标：官方 icon 下载到 assets/logos/ 本地化；
+                                    // 组织账号头像即产品 logo 或确实无图时留 ""
   category: "浏览器扩展",            // 单一主分类（中文）
   tags: ["browser-extension", ...], // 小写英文标签，3~4 个为宜
   status: "in-use",                 // 见下方状态表
@@ -54,10 +56,11 @@
 
 1. 解析用户给的地址。
 2. 阅读 README（`https://raw.githubusercontent.com/{owner}/{repo}/{默认分支}/README.md`），写中文 `description` 与 `notes`（安装方式、亮点、注意事项）。
-3. 归类：分类尽量复用，标签尽量复用；`status` 默认 `in-use`（用户另有说明除外）。
-4. 追加条目到 `TOOLS` 数组末尾，`addedAt` 填当天日期。**不需要填任何统计字段。**
-5. `git commit -m "add: <name>"`。
-6. 新工具的 star 等统计会在下一个定时周期（每天一次）自动出现。若用户希望立即更新，可触发同步：`gh workflow run sync-gh-meta`（或提示用户到仓库 Actions 页面手动 Run workflow）。
+3. 找 logo：README 中引用的方形 icon / logo 图（如 `public/icons/icon.png`、`.github/assets/logo.svg`）→ 下载到 `assets/logos/<slug>.png` 并在 `logo` 字段填相对路径（本地化提交，避免外链依赖；下载后确认图片内容确实是 logo 而非截图/横幅）。组织账号头像即产品 logo（如 excalidraw、HTTPie）或确实找不到图 → 留 `""`，页面自动用 GitHub 账号头像 / 首字母色块兜底。
+4. 归类：分类尽量复用，标签尽量复用；`status` 默认 `in-use`（用户另有说明除外）。
+5. 追加条目到 `TOOLS` 数组末尾，`addedAt` 填当天日期。**不需要填任何统计字段。**
+6. `git commit -m "add: <name>"`（若下载了 logo，一并提交）。
+7. 新工具的 star 等统计会在下一个定时周期（每天一次）自动出现。若用户希望立即更新，可触发同步：`gh workflow run sync-gh-meta`（或提示用户到仓库 Actions 页面手动 Run workflow）。
 
 ## 动态数据刷新（自动）
 

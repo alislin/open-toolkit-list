@@ -53,6 +53,8 @@ open-toolkit/
 ├── data/
 │   ├── tools.js                  # 收藏数据（人工维护，唯一数据源）
 │   └── gh-meta.js                # 动态统计（Actions 自动生成，勿手改）
+├── assets/
+│   └── logos/                    # 工具图标（本地化存储，避免外链依赖）
 ├── scripts/
 │   └── sync-gh-meta.mjs          # 元数据同步脚本（Actions 调用，本地也可跑）
 └── .github/workflows/

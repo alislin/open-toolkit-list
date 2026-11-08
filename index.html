@@ -170,6 +170,20 @@
   .card-meta .dot::before { content: "·"; }
   .card-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
   .card-tags .tag-btn { background: var(--chip); border-color: transparent; }
+  .card-logo {
+    width: 34px; height: 34px; border-radius: 8px; flex: none;
+    object-fit: cover; object-position: center; background: var(--chip);
+  }
+  .card-logo-fallback {
+    width: 34px; height: 34px; border-radius: 8px; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 15px;
+  }
+  .panel-banner {
+    display: block; width: 100%; max-height: 170px; object-fit: cover;
+    margin: 0 0 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--chip);
+  }
 
   .card-detail { padding: 0 16px 16px; border-top: 1px dashed var(--border); margin-top: 0; }
   .card-detail .notes {
@@ -417,6 +431,15 @@
        </button>`).join("");
   }
 
+  // 首字母色块兜底：按名称 hash 生成固定色相，每个工具颜色稳定可辨识
+  function logoFallback(name) {
+    const s = String(name);
+    const ch = [...s.trim()][0] || "?";
+    let h = 0;
+    for (const c of s) h = (h * 31 + c.codePointAt(0)) >>> 0;
+    return `<span class="card-logo-fallback" style="background:hsl(${h % 360},55%,45%)">${esc(ch)}</span>`;
+  }
+
   function renderCard(t) {
     const gh = effGh(t);
     const meta = [];
@@ -428,6 +451,17 @@
       if (rel) meta.push(`更新于 ${esc(rel)}`);
     }
     const st = STATUS_META[t.status] || { label: t.status };
+
+    // logo 三档兜底：tools.js 的 logo 字段 → GitHub 账号头像 → 首字母色块
+    const key = ghKey(t.url);
+    const logoSrc = t.logo || (key ? `https://github.com/${key.split("/")[0]}.png?size=72` : "");
+    const logo = logoSrc
+      ? `<img class="card-logo" data-name="${esc(t.name)}" src="${esc(logoSrc)}" alt="" loading="lazy">`
+      : logoFallback(t.name);
+    // 展开面板顶部的仓库社交预览横幅（懒加载，失败时移除）
+    const banner = key
+      ? `<img class="panel-banner" src="https://opengraph.githubassets.com/1/${esc(key)}" alt="" loading="lazy">`
+      : "";
 
     const tagBtns = (t.tags || []).map(tag =>
       `<button class="tag-btn ${state.tags.has(tag) ? "active" : ""}" data-tag="${esc(tag)}">#${esc(tag)}</button>`).join("");
@@ -447,6 +481,7 @@
     return `<details class="card" data-key="${esc(t.url)}">
       <summary>
         <div class="card-top">
+          ${logo}
           <span class="card-name">${esc(t.name)}</span>
           ${t.pinned ? `<span class="pin" title="置顶">📌</span>` : ""}
           ${gh && gh.archived ? `<span class="archived" title="上游仓库已归档">已归档</span>` : ""}
@@ -457,6 +492,7 @@
         ${tagBtns ? `<div class="card-tags">${tagBtns}</div>` : ""}
       </summary>
       <div class="card-detail">
+        ${banner}
         ${t.notes ? `<div class="notes"><span class="label">备注</span><p>${esc(t.notes)}</p></div>` : ""}
         ${rows.join("")}
         <div class="actions">
@@ -600,6 +636,19 @@
     setSyncStatus(ok ? `已重拉发布数据 ${now}` : "gh-meta.js 加载失败");
   });
   $("live-btn").addEventListener("click", () => refreshAll(true));
+
+  // 图片加载失败兜底：logo → 首字母色块；面板横幅 → 移除（error 事件不冒泡，用捕获监听）
+  $("cards").addEventListener("error", e => {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement)) return;
+    if (img.classList.contains("card-logo")) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = logoFallback(img.dataset.name || "?");
+      img.replaceWith(tmp.firstElementChild);
+    } else if (img.classList.contains("panel-banner")) {
+      img.remove();
+    }
+  }, true);
 
   $("status-chips").addEventListener("click", e => {
     const btn = e.target.closest("[data-status]");
