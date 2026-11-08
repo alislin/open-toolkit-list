@@ -133,5 +133,26 @@ const TOOLS = [
       syncedAt: "2026-11-08"
     },
     addedAt: "2026-11-08"
+  },
+  {
+    name: "Oink",
+    url: "https://github.com/oinkvm/oink",
+    homepage: "",
+    category: "跨设备协作",
+    tags: ["rust", "kvm", "cross-platform", "clipboard-sync"],
+    status: "in-use",
+    pinned: false,
+    description: "软件 KVM：一套键鼠控制多台 Mac/Windows 电脑，并同步剪贴板、拖放与音频。",
+    notes: "P2P 架构，无需指定主控设备，自动发现局域网设备，流量默认加密。macOS 仅支持 Apple Silicon（14.2+），Windows 需 10 22H2+/11（x64）。从 GitHub Releases 下载安装，SmartScreen 可能提示未知发布者。",
+    github: {
+      stars: 762,
+      language: "Rust",
+      license: "GPL-3.0",
+      topics: ["audio-sharing", "barrier-alternative", "clipboard-sync", "cross-platform", "drag-and-drop", "keyboard-sharing"],
+      lastPush: "2026-11-07",
+      archived: false,
+      syncedAt: "2026-11-08"
+    },
+    addedAt: "2026-11-08"
   }
 ];
