@@ -80,5 +80,17 @@ const TOOLS = [
     description: "浏览器翻译扩展：网页全文、视频字幕、图片与 PDF 翻译，支持双语对照与本地离线翻译。",
     notes: "支持划词查词、段落翻译、OCR 图片翻译；内置多家免费翻译服务，也可接 DeepL / OpenAI 兼容接口或本地模型。Edge / Firefox 商店可直接安装，Chrome 需从 Releases 解压加载。",
     addedAt: "2026-11-08"
+  },
+  {
+    name: "Oink",
+    url: "https://github.com/oinkvm/oink",
+    homepage: "",
+    category: "跨设备协作",
+    tags: ["rust", "kvm", "cross-platform", "clipboard-sync"],
+    status: "in-use",
+    pinned: false,
+    description: "软件 KVM：一套键鼠控制多台 Mac/Windows 电脑，并同步剪贴板、拖放与音频。",
+    notes: "P2P 架构，无需指定主控设备，自动发现局域网设备，流量默认加密。macOS 仅支持 Apple Silicon（14.2+），Windows 需 10 22H2+/11（x64）。从 GitHub Releases 下载安装，SmartScreen 可能提示未知发布者。",
+    addedAt: "2026-11-08"
   }
 ];

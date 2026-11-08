@@ -18,7 +18,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-10-27T18:31:31Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T12:59:39.568Z"
+    "fetchedAt": "2026-11-08T13:02:25.633Z"
   },
   "junegunn/fzf": {
     "stars": 84071,
@@ -34,7 +34,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-07T12:06:19Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T12:59:39.978Z"
+    "fetchedAt": "2026-11-08T13:02:26.216Z"
   },
   "jesseduffield/lazygit": {
     "stars": 83732,
@@ -47,7 +47,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-08T07:49:07Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T12:59:40.583Z"
+    "fetchedAt": "2026-11-08T13:02:26.624Z"
   },
   "httpie/cli": {
     "stars": 38700,
@@ -63,7 +63,7 @@ window.GH_META = {
     ],
     "lastPush": "2024-12-17T17:30:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T12:59:41.043Z"
+    "fetchedAt": "2026-11-08T13:02:27.051Z"
   },
   "excalidraw/excalidraw": {
     "stars": 135322,
@@ -79,7 +79,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-08T08:18:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T12:59:41.448Z"
+    "fetchedAt": "2026-11-08T13:02:27.464Z"
   },
   "mr-wuliu/wupage": {
     "stars": 578,
@@ -88,6 +88,22 @@ window.GH_META = {
     "topics": [],
     "lastPush": "2026-11-08T12:58:56Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T12:59:41.888Z"
+    "fetchedAt": "2026-11-08T13:02:28.419Z"
+  },
+  "oinkvm/oink": {
+    "stars": 769,
+    "language": "Rust",
+    "license": "GPL-3.0",
+    "topics": [
+      "audio-sharing",
+      "barrier-alternative",
+      "clipboard-sync",
+      "cross-platform",
+      "drag-and-drop",
+      "keyboard-sharing"
+    ],
+    "lastPush": "2026-11-07T10:08:37Z",
+    "archived": false,
+    "fetchedAt": "2026-11-08T13:02:28.847Z"
   }
 };
