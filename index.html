@@ -681,28 +681,22 @@
   });
 
   // ---------------- 主题 ----------------
+  // 默认浅色；仅浅/深两态手动切换（localStorage: ot-theme），不跟随系统
   const root = document.documentElement;
-  const media = matchMedia("(prefers-color-scheme: dark)");
-  const THEME_ICON = { auto: "🔄", light: "☀️", dark: "🌙" };
-  const THEME_TITLE = { auto: "当前：跟随系统", light: "当前：浅色", dark: "当前：深色" };
+  const THEME_ICON = { light: "☀️", dark: "🌙" };
 
   function applyTheme() {
-    const pref = localStorage.getItem("ot-theme") || "auto";
-    const dark = pref === "dark" || (pref === "auto" && media.matches);
-    root.dataset.theme = dark ? "dark" : "light";
+    const pref = localStorage.getItem("ot-theme") === "dark" ? "dark" : "light";
+    root.dataset.theme = pref;
     const btn = $("theme-btn");
     btn.textContent = THEME_ICON[pref];
-    btn.title = THEME_TITLE[pref] + "，点击切换";
+    btn.title = pref === "light" ? "当前：浅色，点击切换深色" : "当前：深色，点击切换浅色";
   }
 
   $("theme-btn").addEventListener("click", () => {
-    const order = ["auto", "light", "dark"];
-    const cur = localStorage.getItem("ot-theme") || "auto";
-    localStorage.setItem("ot-theme", order[(order.indexOf(cur) + 1) % order.length]);
+    const next = localStorage.getItem("ot-theme") === "dark" ? "light" : "dark";
+    localStorage.setItem("ot-theme", next);
     applyTheme();
-  });
-  media.addEventListener("change", () => {
-    if ((localStorage.getItem("ot-theme") || "auto") === "auto") applyTheme();
   });
 
   // ---------------- 启动 ----------------
