@@ -358,12 +358,12 @@
     return `${Math.floor(mon / 12)} 年前`;
   }
 
-  // 具体时间：实时值（ISO 含时分）转本地 "YYYY-MM-DD HH:MM"，快照日期原样显示
+  // 具体时间：ISO / 时间戳转本地 "YYYY-MM-DD HH:MM"，纯日期字符串原样显示
   function fmtDateTime(v) {
     if (!v) return "—";
-    if (!v.includes("T")) return v;
     const d = new Date(v);
-    if (isNaN(d)) return v;
+    if (typeof v === "string" && !v.includes("T")) return v;   // 日期字符串 YYYY-MM-DD
+    if (isNaN(d)) return String(v);
     const p = n => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
   }
@@ -558,7 +558,7 @@
   async function refreshOne(key, force) {
     const cached = ghCache[key];
     if (!force && cached && cached.data && Date.now() - cached.fetchedAt < GH_TTL) {
-      live.set(key, { ...cached.data, fetchedAt: cached.fetchedAt });
+      live.set(key, { ...cached.data, fetchedAt: new Date(cached.fetchedAt).toISOString() });
       return "cache";
     }
     const headers = {};
@@ -566,7 +566,7 @@
     const res = await fetch(`https://api.github.com/repos/${key}`, { headers, cache: "no-cache" });
     if (res.status === 304 && cached && cached.data) {
       cached.fetchedAt = Date.now();
-      live.set(key, { ...cached.data, fetchedAt: cached.fetchedAt });
+      live.set(key, { ...cached.data, fetchedAt: new Date(cached.fetchedAt).toISOString() });
       return "304";
     }
     if (res.status === 403 || res.status === 429) {   // 限额耗尽，终止本轮
@@ -577,7 +577,7 @@
     const etag = res.headers.get("etag") || "";
     const data = apiData(await res.json());
     ghCache[key] = { etag, fetchedAt: Date.now(), data };
-    live.set(key, { ...data, fetchedAt: ghCache[key].fetchedAt });
+    live.set(key, { ...data, fetchedAt: new Date().toISOString() });
     return "ok";
   }
 
