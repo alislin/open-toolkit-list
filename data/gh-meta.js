@@ -18,10 +18,10 @@ window.GH_META = {
     ],
     "lastPush": "2026-10-27T18:31:31Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:25.633Z"
+    "fetchedAt": "2026-11-08T13:36:27.503Z"
   },
   "junegunn/fzf": {
-    "stars": 84071,
+    "stars": 84072,
     "language": "Go",
     "license": "MIT",
     "topics": [
@@ -34,7 +34,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-07T12:06:19Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:26.216Z"
+    "fetchedAt": "2026-11-08T13:36:27.742Z"
   },
   "jesseduffield/lazygit": {
     "stars": 83732,
@@ -45,9 +45,9 @@ window.GH_META = {
       "git",
       "terminal"
     ],
-    "lastPush": "2026-11-08T07:49:07Z",
+    "lastPush": "2026-11-08T13:31:50Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:26.624Z"
+    "fetchedAt": "2026-11-08T13:36:27.967Z"
   },
   "httpie/cli": {
     "stars": 38700,
@@ -63,10 +63,10 @@ window.GH_META = {
     ],
     "lastPush": "2024-12-17T17:30:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:27.051Z"
+    "fetchedAt": "2026-11-08T13:36:28.209Z"
   },
   "excalidraw/excalidraw": {
-    "stars": 135322,
+    "stars": 135323,
     "language": "TypeScript",
     "license": "MIT",
     "topics": [
@@ -79,7 +79,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-08T08:18:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:27.464Z"
+    "fetchedAt": "2026-11-08T13:36:28.425Z"
   },
   "mr-wuliu/wupage": {
     "stars": 578,
@@ -88,10 +88,10 @@ window.GH_META = {
     "topics": [],
     "lastPush": "2026-11-08T12:58:56Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:28.419Z"
+    "fetchedAt": "2026-11-08T13:36:28.648Z"
   },
   "oinkvm/oink": {
-    "stars": 769,
+    "stars": 774,
     "language": "Rust",
     "license": "GPL-3.0",
     "topics": [
@@ -104,6 +104,6 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-07T10:08:37Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:02:28.847Z"
+    "fetchedAt": "2026-11-08T13:36:28.875Z"
   }
 };
