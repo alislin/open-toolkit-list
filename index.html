@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Toolkit · 开源工具收藏夹</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --text: #1c2333;
+    --muted: #6b7280;
+    --border: #e4e7ec;
+    --accent: #4059e0;
+    --accent-weak: rgba(64, 89, 224, .10);
+    --chip: #eef0f4;
+    --st-in-use: #15803d;
+    --st-trial: #1d4ed8;
+    --st-backup: #b45309;
+    --st-deprecated: #64748b;
+    --danger: #dc2626;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .06);
+  }
+  [data-theme="dark"] {
+    --bg: #0e1015;
+    --card: #161a22;
+    --text: #e5e8ef;
+    --muted: #9aa1ad;
+    --border: #2a2f3c;
+    --accent: #8b9cff;
+    --accent-weak: rgba(139, 156, 255, .14);
+    --chip: #1d222d;
+    --st-in-use: #4ade80;
+    --st-trial: #7aa2ff;
+    --st-backup: #fbbf24;
+    --st-deprecated: #94a3b8;
+    --danger: #f87171;
+    --shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  }
+
+  * { box-sizing: border-box; }
+  html { scrollbar-gutter: stable; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 12px 20px;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  h1 { font-size: 17px; margin: 0; white-space: nowrap; }
+  h1 .sub { font-size: 13px; color: var(--muted); font-weight: normal; margin-left: 8px; }
+  .search-wrap { flex: 1; min-width: 220px; }
+  #search {
+    width: 100%; padding: 8px 14px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text); font-size: 14px;
+  }
+  #search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-weak); }
+  select, .icon-btn {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--card); color: var(--text); font-size: 13px; cursor: pointer;
+  }
+  .icon-btn:hover, select:hover { border-color: var(--accent); }
+
+  /* ---------- layout ---------- */
+  .layout {
+    max-width: 1200px; margin: 0 auto; padding: 20px;
+    display: grid; grid-template-columns: 225px 1fr; gap: 24px;
+    align-items: start;
+  }
+  aside {
+    position: sticky; top: 76px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  aside h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 8px;
+  }
+  .cat-list { display: flex; flex-direction: column; gap: 2px; }
+  .cat-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    width: 100%; padding: 6px 10px;
+    border: none; border-radius: 8px;
+    background: transparent; color: var(--text);
+    font-size: 13px; cursor: pointer; text-align: left;
+  }
+  .cat-item:hover { background: var(--chip); }
+  .cat-item.active { background: var(--accent-weak); color: var(--accent); font-weight: 600; }
+  .cat-item .count { font-size: 12px; color: var(--muted); }
+  .cat-item.active .count { color: var(--accent); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip, .tag-btn {
+    padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--muted); font-size: 12px; cursor: pointer;
+  }
+  .chip:hover, .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active, .tag-btn.active {
+    background: var(--accent-weak); border-color: var(--accent);
+    color: var(--accent); font-weight: 600;
+  }
+  .chip .count { opacity: .75; margin-left: 3px; }
+
+  /* ---------- toolbar / cards ---------- */
+  .toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; gap: 12px;
+  }
+  .toolbar .meta { color: var(--muted); font-size: 13px; }
+  #clear-filters {
+    padding: 5px 12px; border: 1px solid var(--danger); border-radius: 8px;
+    background: transparent; color: var(--danger); font-size: 12px; cursor: pointer;
+  }
+  #clear-filters:hover { background: rgba(220, 38, 38, .08); }
+
+  #cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+
+  details.card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow); overflow: hidden;
+    transition: border-color .15s;
+  }
+  details.card:hover { border-color: var(--accent); }
+  details.card[open] { border-color: var(--accent); }
+  details.card summary {
+    padding: 14px 16px; cursor: pointer; list-style: none;
+  }
+  details.card summary::-webkit-details-marker { display: none; }
+  .card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-name { font-size: 15px; font-weight: 700; }
+  .pin { font-size: 12px; }
+  .archived {
+    font-size: 11px; padding: 1px 7px; border-radius: 999px;
+    background: rgba(220, 38, 38, .12); color: var(--danger);
+  }
+  .status {
+    margin-left: auto; font-size: 11px; padding: 2px 9px; border-radius: 999px;
+    font-weight: 600; white-space: nowrap;
+  }
+  .st-in-use     { color: var(--st-in-use);     background: rgba(34, 197, 94, .12); }
+  .st-trial      { color: var(--st-trial);      background: rgba(59, 130, 246, .12); }
+  .st-backup     { color: var(--st-backup);     background: rgba(245, 158, 11, .14); }
+  .st-deprecated { color: var(--st-deprecated); background: rgba(148, 163, 184, .16); }
+  .card-desc { color: var(--muted); margin-top: 6px; }
+  .card-meta { margin-top: 8px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; }
+  .card-meta .dot::before { content: "·"; }
+  .card-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .card-tags .tag-btn { background: var(--chip); border-color: transparent; }
+
+  .card-detail { padding: 0 16px 16px; border-top: 1px dashed var(--border); margin-top: 0; }
+  .card-detail .notes {
+    margin-top: 12px; padding: 8px 12px;
+    border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;
+    background: var(--accent-weak);
+  }
+  .card-detail .notes .label { font-size: 11px; color: var(--accent); font-weight: 700; }
+  .card-detail .notes p { margin: 2px 0 0; }
+  .kv { display: flex; gap: 10px; margin-top: 8px; font-size: 13px; }
+  .kv .k { color: var(--muted); flex: 0 0 4.5em; }
+  .kv .v { word-break: break-all; }
+  .topics { display: flex; flex-wrap: wrap; gap: 5px; }
+  .topics span {
+    font-size: 11px; padding: 1px 8px; border-radius: 999px;
+    background: var(--chip); color: var(--muted);
+  }
+  .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    padding: 6px 14px; border-radius: 8px; font-size: 13px;
+    background: var(--accent-weak); color: var(--accent); font-weight: 600;
+  }
+  .btn:hover { text-decoration: none; filter: brightness(1.08); }
+
+  #empty {
+    padding: 60px 20px; text-align: center; color: var(--muted);
+    border: 1px dashed var(--border); border-radius: 12px;
+  }
+
+  footer {
+    max-width: 1200px; margin: 0 auto; padding: 12px 20px 28px;
+    color: var(--muted); font-size: 12px; text-align: center;
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; flex-direction: row; flex-wrap: wrap; gap: 16px; }
+    aside section { flex: 1 1 160px; }
+    .status { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>🧰 Open Toolkit<span class="sub">开源工具收藏夹</span></h1>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="搜索名称 / 描述 / 标签 / 备注…" autocomplete="off">
+    </div>
+    <select id="sort" title="排序方式">
+      <option value="added">最近添加</option>
+      <option value="stars">Star 最多</option>
+      <option value="pushed">最近更新</option>
+      <option value="name">名称 A-Z</option>
+    </select>
+    <button id="theme-btn" class="icon-btn" title="切换主题">🔄</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <section>
+      <h2>状态</h2>
+      <div id="status-chips" class="chips"></div>
+    </section>
+    <section>
+      <h2>分类</h2>
+      <div id="category-list" class="cat-list"></div>
+    </section>
+    <section>
+      <h2>标签</h2>
+      <div id="tag-cloud" class="chips"></div>
+    </section>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <span id="result-count" class="meta"></span>
+      <button id="clear-filters" hidden>清除筛选</button>
+    </div>
+    <div id="cards"></div>
+    <div id="empty" hidden>
+      <p>😮‍💨 没有匹配的工具</p>
+      <p>试试更换关键词，或点击右上角「清除筛选」。</p>
+    </div>
+  </main>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="data/tools.js"></script>
+<script>
+  "use strict";
+
+  // ---------------- 常量 ----------------
+  const STATUS_META = {
+    "in-use":     { label: "在用" },
+    "trial":      { label: "试用" },
+    "backup":     { label: "备选" },
+    "deprecated": { label: "弃用" }
+  };
+
+  const state = { q: "", status: "", category: "", tags: new Set(), sort: "added" };
+
+  const $ = id => document.getElementById(id);
+
+  // ---------------- 工具函数 ----------------
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  const fmtStars = n => n >= 1000
+    ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k"
+    : String(n ?? "");
+
+  const isActive = t => {
+    if (state.category && t.category !== state.category) return false;
+    if (state.status && t.status !== state.status) return false;
+    for (const tag of state.tags) if (!(t.tags || []).includes(tag)) return false;
+    if (state.q) {
+      const hay = [t.name, t.description, t.notes, t.category,
+        ...(t.tags || []), t.github && t.github.language]
+        .join(" ").toLowerCase();
+      for (const kw of state.q.toLowerCase().split(/\s+/)) {
+        if (kw && !hay.includes(kw)) return false;
+      }
+    }
+    return true;
+  };
+
+  function sortTools(list) {
+    const pin = t => (t.pinned ? 0 : 1);
+    const cmp = {
+      added:  (a, b) => String(b.addedAt || "").localeCompare(String(a.addedAt || "")),
+      stars:  (a, b) => ((b.github && b.github.stars) || 0) - ((a.github && a.github.stars) || 0),
+      pushed: (a, b) => String(b.github && b.github.lastPush || "").localeCompare(String(a.github && a.github.lastPush || "")),
+      name:   (a, b) => String(a.name).localeCompare(String(b.name))
+    }[state.sort];
+    return [...list].sort((a, b) => pin(a) - pin(b) || cmp(a, b));
+  }
+
+  // ---------------- 渲染 ----------------
+  function renderFilters() {
+    // 状态
+    const statusCounts = {};
+    TOOLS.forEach(t => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
+    $("status-chips").innerHTML =
+      `<button class="chip ${!state.status ? "active" : ""}" data-status="">全部 <span class="count">${TOOLS.length}</span></button>` +
+      Object.keys(STATUS_META).map(key =>
+        `<button class="chip ${state.status === key ? "active" : ""}" data-status="${key}">
+           ${STATUS_META[key].label} <span class="count">${statusCounts[key] || 0}</span>
+         </button>`).join("");
+
+    // 分类
+    const catCounts = {};
+    TOOLS.forEach(t => { catCounts[t.category] = (catCounts[t.category] || 0) + 1; });
+    const cats = Object.keys(catCounts).sort((a, b) => catCounts[b] - catCounts[a] || a.localeCompare(b));
+    $("category-list").innerHTML =
+      `<button class="cat-item ${!state.category ? "active" : ""}" data-cat="">
+         <span>全部</span><span class="count">${TOOLS.length}</span>
+       </button>` +
+      cats.map(c =>
+        `<button class="cat-item ${state.category === c ? "active" : ""}" data-cat="${esc(c)}">
+           <span>${esc(c)}</span><span class="count">${catCounts[c]}</span>
+         </button>`).join("");
+
+    // 标签
+    const tagCounts = {};
+    TOOLS.forEach(t => (t.tags || []).forEach(tag => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; }));
+    const tags = Object.keys(tagCounts)
+      .sort((a, b) => tagCounts[b] - tagCounts[a] || a.localeCompare(b));
+    $("tag-cloud").innerHTML = tags.map(tag =>
+      `<button class="tag-btn ${state.tags.has(tag) ? "active" : ""}" data-tag="${esc(tag)}">
+         #${esc(tag)} <span class="count">${tagCounts[tag]}</span>
+       </button>`).join("");
+  }
+
+  function renderCard(t) {
+    const gh = t.github || null;
+    const meta = [];
+    if (gh) meta.push(`⭐ ${fmtStars(gh.stars)}`);
+    if (gh && gh.language) meta.push(esc(gh.language));
+    if (gh && gh.license) meta.push(esc(gh.license));
+    const st = STATUS_META[t.status] || { label: t.status };
+
+    const tagBtns = (t.tags || []).map(tag =>
+      `<button class="tag-btn ${state.tags.has(tag) ? "active" : ""}" data-tag="${esc(tag)}">#${esc(tag)}</button>`).join("");
+
+    const rows = [];
+    rows.push(`<div class="kv"><span class="k">仓库</span><span class="v"><a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.url)}</a></span></div>`);
+    if (t.homepage) rows.push(`<div class="kv"><span class="k">主页</span><span class="v"><a href="${esc(t.homepage)}" target="_blank" rel="noopener">${esc(t.homepage)}</a></span></div>`);
+    if (gh && gh.topics && gh.topics.length) {
+      rows.push(`<div class="kv"><span class="k">Topics</span><span class="v topics">${gh.topics.map(x => `<span>${esc(x)}</span>`).join("")}</span></div>`);
+    }
+    rows.push(`<div class="kv"><span class="k">添加于</span><span class="v">${esc(t.addedAt || "—")}</span></div>`);
+    if (gh) {
+      rows.push(`<div class="kv"><span class="k">最近推送</span><span class="v">${esc(gh.lastPush || "—")}</span></div>`);
+      rows.push(`<div class="kv"><span class="k">数据同步</span><span class="v">${esc(gh.syncedAt || "—")}</span></div>`);
+    }
+
+    return `<details class="card">
+      <summary>
+        <div class="card-top">
+          <span class="card-name">${esc(t.name)}</span>
+          ${t.pinned ? `<span class="pin" title="置顶">📌</span>` : ""}
+          ${gh && gh.archived ? `<span class="archived" title="上游仓库已归档">已归档</span>` : ""}
+          <span class="status st-${esc(t.status)}">${esc(st.label)}</span>
+        </div>
+        <div class="card-desc">${esc(t.description)}</div>
+        <div class="card-meta">${meta.map(m => `<span>${m}</span>`).join(`<span class="dot"></span>`)}</div>
+        ${tagBtns ? `<div class="card-tags">${tagBtns}</div>` : ""}
+      </summary>
+      <div class="card-detail">
+        ${t.notes ? `<div class="notes"><span class="label">备注</span><p>${esc(t.notes)}</p></div>` : ""}
+        ${rows.join("")}
+        <div class="actions">
+          <a class="btn" href="${esc(t.url)}" target="_blank" rel="noopener">打开仓库 ↗</a>
+          ${t.homepage ? `<a class="btn" href="${esc(t.homepage)}" target="_blank" rel="noopener">访问主页 ↗</a>` : ""}
+        </div>
+      </div>
+    </details>`;
+  }
+
+  function render() {
+    renderFilters();
+    const list = sortTools(TOOLS.filter(isActive));
+    $("cards").innerHTML = list.map(renderCard).join("");
+    $("empty").hidden = list.length !== 0;
+    $("result-count").textContent =
+      list.length === TOOLS.length
+        ? `共 ${TOOLS.length} 个工具`
+        : `筛选出 ${list.length} / ${TOOLS.length} 个工具`;
+    const hasFilter = state.q || state.status || state.category || state.tags.size > 0;
+    $("clear-filters").hidden = !hasFilter;
+  }
+
+  function renderFooter() {
+    const synced = TOOLS
+      .map(t => t.github && t.github.syncedAt)
+      .filter(Boolean)
+      .sort()
+      .pop();
+    $("footer").textContent = `共收录 ${TOOLS.length} 个工具` + (synced ? ` · GitHub 数据同步于 ${synced}` : "");
+  }
+
+  // ---------------- 事件 ----------------
+  $("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
+  $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
+
+  $("status-chips").addEventListener("click", e => {
+    const btn = e.target.closest("[data-status]");
+    if (!btn) return;
+    state.status = btn.dataset.status || "";
+    render();
+  });
+
+  $("category-list").addEventListener("click", e => {
+    const btn = e.target.closest("[data-cat]");
+    if (!btn) return;
+    state.category = btn.dataset.cat || "";
+    render();
+  });
+
+  // 标签在侧栏与卡片内都有，统一委托到 document
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".tag-btn[data-tag]");
+    if (!btn) return;
+    e.preventDefault();            // 在卡片 summary 内点击时不展开/收起卡片
+    const tag = btn.dataset.tag;
+    state.tags.has(tag) ? state.tags.delete(tag) : state.tags.add(tag);
+    render();
+  });
+
+  $("clear-filters").addEventListener("click", () => {
+    state.q = ""; state.status = ""; state.category = ""; state.tags.clear();
+    $("search").value = "";
+    render();
+  });
+
+  // ---------------- 主题 ----------------
+  const root = document.documentElement;
+  const media = matchMedia("(prefers-color-scheme: dark)");
+  const THEME_ICON = { auto: "🔄", light: "☀️", dark: "🌙" };
+  const THEME_TITLE = { auto: "当前：跟随系统", light: "当前：浅色", dark: "当前：深色" };
+
+  function applyTheme() {
+    const pref = localStorage.getItem("ot-theme") || "auto";
+    const dark = pref === "dark" || (pref === "auto" && media.matches);
+    root.dataset.theme = dark ? "dark" : "light";
+    const btn = $("theme-btn");
+    btn.textContent = THEME_ICON[pref];
+    btn.title = THEME_TITLE[pref] + "，点击切换";
+  }
+
+  $("theme-btn").addEventListener("click", () => {
+    const order = ["auto", "light", "dark"];
+    const cur = localStorage.getItem("ot-theme") || "auto";
+    localStorage.setItem("ot-theme", order[(order.indexOf(cur) + 1) % order.length]);
+    applyTheme();
+  });
+  media.addEventListener("change", () => {
+    if ((localStorage.getItem("ot-theme") || "auto") === "auto") applyTheme();
+  });
+
+  // ---------------- 启动 ----------------
+  applyTheme();
+  renderFooter();
+  render();
+</script>
+</body>
+</html>
