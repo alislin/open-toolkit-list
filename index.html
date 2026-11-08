@@ -251,7 +251,8 @@
       <span id="result-count" class="meta"></span>
       <span class="toolbar-right">
         <span id="sync-status" class="meta"></span>
-        <button id="refresh-btn" class="icon-btn" title="强制刷新 GitHub 数据">🔄</button>
+        <button id="live-btn" class="icon-btn" title="强制实时同步 api.github.com（仅本地模式可用）" hidden>⚡</button>
+        <button id="refresh-btn" class="icon-btn" title="重拉发布数据 gh-meta.js">🔄</button>
         <button id="clear-filters" hidden>清除筛选</button>
       </span>
     </div>
@@ -266,6 +267,7 @@
 <footer id="footer"></footer>
 
 <script src="data/tools.js"></script>
+<script src="data/gh-meta.js" data-gh-meta></script>
 <script>
   "use strict";
 
@@ -281,17 +283,21 @@
 
   const $ = id => document.getElementById(id);
 
-  // ---------------- GitHub 实时数据 ----------------
-  const GH_CACHE_KEY = "ot-gh-cache";   // localStorage：etag + 数据 + 抓取时间
-  const GH_TTL = 60 * 60 * 1000;        // 缓存有效期 1 小时
-  const GH_POOL = 5;                    // 请求并发数
-  let ghRateLimited = false;            // 本轮是否遇到限额（403/429）
+  // ---------------- GitHub 动态数据 ----------------
+  // 数据来源分层（展示层叠加，不回写 tools.js）：
+  //   1) ⚡ api.github.com 直连 —— 仅本地（file://）模式：启动自动刷新 + 手动强制
+  //   2) data/gh-meta.js —— Actions 每日生成并随仓库发布（主数据源，双模式可用）
+  const GH_CACHE_KEY = "ot-gh-cache";   // 直连数据缓存：etag + 数据 + 抓取时间
+  const GH_TTL = 60 * 60 * 1000;        // 直连缓存有效期 1 小时
+  const GH_POOL = 5;                    // 直连请求并发数
+  const IS_LOCAL = location.protocol === "file:";
+  let ghRateLimited = false;            // 直连本轮是否遇到限额（403/429）
 
   let ghCache = {};
   try { ghCache = JSON.parse(localStorage.getItem(GH_CACHE_KEY) || "{}"); } catch { ghCache = {}; }
   const saveGhCache = () => { try { localStorage.setItem(GH_CACHE_KEY, JSON.stringify(ghCache)); } catch {} };
 
-  const live = new Map();               // owner/repo → 实时数据（展示层叠加，不回写快照）
+  const live = new Map();               // owner/repo → ⚡直连数据（仅本地模式产生）
 
   // 从仓库 URL 解析 owner/repo，非 GitHub 地址返回 null
   function ghKey(url) {
@@ -299,13 +305,18 @@
     return m ? `${m[1]}/${m[2]}`.replace(/\.git$/i, "") : null;
   }
 
-  // 展示用有效数据：实时值优先，回退 tools.js 快照
+  function metaGh(key) {
+    return (typeof GH_META !== "undefined" && GH_META && GH_META[key]) || null;
+  }
+
+  // 展示用有效数据：⚡直连 > gh-meta 发布数据；null 表示暂无动态数据（未同步/非 GitHub）
   function effGh(t) {
-    if (!t.github) return null;
     const key = ghKey(t.url);
-    const d = key && live.get(key);
-    if (d) return { ...d, isLive: true };
-    return { ...t.github, isLive: false };
+    if (!key) return null;
+    if (live.has(key)) return { ...live.get(key), isLive: true };
+    const meta = metaGh(key);
+    if (meta) return { ...meta, isLive: false };
+    return null;
   }
 
   // ---------------- 工具函数 ----------------
@@ -430,7 +441,7 @@
     rows.push(`<div class="kv"><span class="k">添加于</span><span class="v">${esc(t.addedAt || "—")}</span></div>`);
     if (gh) {
       rows.push(`<div class="kv"><span class="k">最近推送</span><span class="v">${esc(fmtDateTime(gh.lastPush))}${gh.isLive ? ` <span class="live-tag">实时</span>` : ""}</span></div>`);
-      rows.push(`<div class="kv"><span class="k">数据同步</span><span class="v">${esc(t.github.syncedAt || "—")}（快照）</span></div>`);
+      rows.push(`<div class="kv"><span class="k">数据抓取</span><span class="v">${esc(fmtDateTime(gh.fetchedAt))}</span></div>`);
     }
 
     return `<details class="card" data-key="${esc(t.url)}">
@@ -474,19 +485,20 @@
   }
 
   function renderFooter() {
-    const synced = TOOLS
-      .map(t => t.github && t.github.syncedAt)
-      .filter(Boolean)
-      .sort()
-      .pop();
-    $("footer").textContent = `共收录 ${TOOLS.length} 个工具` + (synced ? ` · GitHub 数据同步于 ${synced}` : "");
+    const times = (typeof GH_META !== "undefined" && GH_META)
+      ? Object.values(GH_META).map(m => m.fetchedAt).filter(Boolean).sort()
+      : [];
+    $("footer").textContent = `共收录 ${TOOLS.length} 个工具` +
+      (times.length ? ` · GitHub 数据抓取于 ${fmtDateTime(times[times.length - 1])}` : "");
   }
 
   // ---------------- GitHub 同步流程 ----------------
   function setSyncStatus(text, busy = false) {
     $("sync-status").textContent = text;
     $("refresh-btn").classList.toggle("spinning", busy);
+    $("live-btn").classList.toggle("spinning", busy);
     $("refresh-btn").disabled = busy;
+    $("live-btn").disabled = busy;
   }
 
   // 合并多次完成后的重绘，避免频繁抖动
@@ -534,7 +546,7 @@
   }
 
   async function refreshAll(force = false) {
-    const keys = [...new Set(TOOLS.filter(t => t.github).map(t => ghKey(t.url)).filter(Boolean))];
+    const keys = [...new Set(TOOLS.map(t => ghKey(t.url)).filter(Boolean))];
     if (!keys.length) { setSyncStatus("无 GitHub 工具，无需同步"); return; }
     if (!navigator.onLine) { setSyncStatus("当前离线，已用快照"); return; }
 
@@ -563,9 +575,31 @@
   }
 
   // ---------------- 事件 ----------------
+  // 重新加载 gh-meta.js（时间戳破缓存；文件内是 window.GH_META 赋值，重复注入直接覆盖）
+  function reloadMeta() {
+    return new Promise(resolve => {
+      document.querySelectorAll("script[data-gh-meta]").forEach(s => s.remove());
+      const s = document.createElement("script");
+      s.src = `data/gh-meta.js?t=${Date.now()}`;
+      s.dataset.ghMeta = "1";
+      s.onload = () => resolve(true);
+      s.onerror = () => resolve(false);
+      document.head.appendChild(s);
+    });
+  }
+
   $("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
   $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
-  $("refresh-btn").addEventListener("click", () => refreshAll(true));
+  $("refresh-btn").addEventListener("click", async () => {
+    setSyncStatus("重拉发布数据…", true);
+    const ok = await reloadMeta();
+    render();
+    renderFooter();
+    const p = n => String(n).padStart(2, "0");
+    const now = `${p(new Date().getHours())}:${p(new Date().getMinutes())}`;
+    setSyncStatus(ok ? `已重拉发布数据 ${now}` : "gh-meta.js 加载失败");
+  });
+  $("live-btn").addEventListener("click", () => refreshAll(true));
 
   $("status-chips").addEventListener("click", e => {
     const btn = e.target.closest("[data-status]");
@@ -626,7 +660,10 @@
   applyTheme();
   renderFooter();
   render();
-  setTimeout(() => refreshAll(), 1000);   // 先渲染快照，随后静默实时同步
+  if (IS_LOCAL) {
+    $("live-btn").hidden = false;           // ⚡ 直连仅本地模式开放
+    setTimeout(() => refreshAll(), 1000);   // 本地默认自动刷新（TTL 内走缓存，ETag 304 不耗限额）
+  }                                          // 托管模式：零 API 调用，仅用 gh-meta.js 发布数据
 </script>
 </body>
 </html>
