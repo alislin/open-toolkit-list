@@ -5,7 +5,7 @@
 
 window.GH_META = {
   "BurntSushi/ripgrep": {
-    "stars": 69893,
+    "stars": 69912,
     "language": "Rust",
     "license": "Unlicense",
     "topics": [
@@ -18,10 +18,10 @@ window.GH_META = {
     ],
     "lastPush": "2026-10-27T18:31:31Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:27.503Z"
+    "fetchedAt": "2026-11-09T00:18:22.687Z"
   },
   "junegunn/fzf": {
-    "stars": 84072,
+    "stars": 84086,
     "language": "Go",
     "license": "MIT",
     "topics": [
@@ -34,10 +34,10 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-07T12:06:19Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:27.742Z"
+    "fetchedAt": "2026-11-09T00:18:22.853Z"
   },
   "jesseduffield/lazygit": {
-    "stars": 83732,
+    "stars": 83738,
     "language": "Go",
     "license": "MIT",
     "topics": [
@@ -45,9 +45,9 @@ window.GH_META = {
       "git",
       "terminal"
     ],
-    "lastPush": "2026-11-08T13:31:50Z",
+    "lastPush": "2026-11-08T19:13:23Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:27.967Z"
+    "fetchedAt": "2026-11-09T00:18:23.049Z"
   },
   "httpie/cli": {
     "stars": 38700,
@@ -63,10 +63,10 @@ window.GH_META = {
     ],
     "lastPush": "2024-12-17T17:30:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:28.209Z"
+    "fetchedAt": "2026-11-09T00:18:23.280Z"
   },
   "excalidraw/excalidraw": {
-    "stars": 135323,
+    "stars": 135343,
     "language": "TypeScript",
     "license": "MIT",
     "topics": [
@@ -79,19 +79,19 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-08T08:18:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:28.425Z"
+    "fetchedAt": "2026-11-09T00:18:23.499Z"
   },
   "mr-wuliu/wupage": {
-    "stars": 578,
+    "stars": 581,
     "language": "TypeScript",
     "license": "GPL-3.0",
     "topics": [],
     "lastPush": "2026-11-08T12:58:56Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:28.648Z"
+    "fetchedAt": "2026-11-09T00:18:23.711Z"
   },
   "oinkvm/oink": {
-    "stars": 774,
+    "stars": 846,
     "language": "Rust",
     "license": "GPL-3.0",
     "topics": [
@@ -102,8 +102,8 @@ window.GH_META = {
       "drag-and-drop",
       "keyboard-sharing"
     ],
-    "lastPush": "2026-11-07T10:08:37Z",
+    "lastPush": "2026-11-08T22:48:12Z",
     "archived": false,
-    "fetchedAt": "2026-11-08T13:36:28.875Z"
+    "fetchedAt": "2026-11-09T00:18:23.951Z"
   }
 };
