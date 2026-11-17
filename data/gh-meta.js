@@ -5,7 +5,7 @@
 
 window.GH_META = {
   "BurntSushi/ripgrep": {
-    "stars": 70009,
+    "stars": 70010,
     "language": "Rust",
     "license": "Unlicense",
     "topics": [
@@ -18,7 +18,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-09T20:53:12Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:41.020Z"
+    "fetchedAt": "2026-11-17T14:05:24.554Z"
   },
   "junegunn/fzf": {
     "stars": 84239,
@@ -34,10 +34,10 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-12T01:51:46Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:41.541Z"
+    "fetchedAt": "2026-11-17T14:05:25.188Z"
   },
   "jesseduffield/lazygit": {
-    "stars": 83937,
+    "stars": 83938,
     "language": "Go",
     "license": "MIT",
     "topics": [
@@ -47,7 +47,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-15T18:40:34Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:42.540Z"
+    "fetchedAt": "2026-11-17T14:05:26.274Z"
   },
   "httpie/cli": {
     "stars": 38719,
@@ -63,7 +63,7 @@ window.GH_META = {
     ],
     "lastPush": "2024-12-17T17:30:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:43.003Z"
+    "fetchedAt": "2026-11-17T14:05:26.945Z"
   },
   "excalidraw/excalidraw": {
     "stars": 135854,
@@ -79,16 +79,16 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-17T13:07:45Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:43.632Z"
+    "fetchedAt": "2026-11-17T14:05:27.566Z"
   },
   "mr-wuliu/wupage": {
-    "stars": 739,
+    "stars": 740,
     "language": "TypeScript",
     "license": "GPL-3.0",
     "topics": [],
     "lastPush": "2026-11-17T10:04:04Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:44.199Z"
+    "fetchedAt": "2026-11-17T14:05:28.066Z"
   },
   "oinkvm/oink": {
     "stars": 1985,
@@ -104,7 +104,7 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-17T11:53:41Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:44.860Z"
+    "fetchedAt": "2026-11-17T14:05:28.548Z"
   },
   "jark006/JarkViewer": {
     "stars": 1362,
@@ -120,6 +120,15 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-01T21:10:25Z",
     "archived": false,
-    "fetchedAt": "2026-11-17T13:57:45.815Z"
+    "fetchedAt": "2026-11-17T14:05:29.032Z"
+  },
+  "TeraTermProject/teraterm": {
+    "stars": 1098,
+    "language": "C",
+    "license": "NOASSERTION",
+    "topics": [],
+    "lastPush": "2026-11-16T15:37:59Z",
+    "archived": false,
+    "fetchedAt": "2026-11-17T14:05:29.484Z"
   }
 };
