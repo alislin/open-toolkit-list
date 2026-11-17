@@ -112,5 +112,18 @@ const TOOLS = [
     description: "Windows 原生看图软件，支持 HEIC/AVIF/RAW 等海量格式，集编辑标注、批量处理与音视频播放于一体。",
     notes: "单文件免安装，支持 winget / scoop 安装；EXIF 面板可查看 StableDiffusion / ComfyUI 提示词；资源管理器缩略图需保留 JarkThumbnailProvider.dll 并在设置中注册。",
     addedAt: "2026-11-17"
+  },
+  {
+    name: "Tera Term",
+    url: "https://github.com/TeraTermProject/teraterm",
+    homepage: "https://teratermproject.github.io/",
+    logo: "assets/logos/teraterm.png",
+    category: "网络调试",
+    tags: ["windows", "terminal", "ssh", "serial-port"],
+    status: "in-use",
+    pinned: false,
+    description: "老牌 Windows 终端模拟器，支持串口、Telnet、SSH 连接，内置 TTL 宏脚本与日志功能。",
+    notes: "BSD 许可，Tera Term Pro 2.3 官方公认后继版；安装包从 GitHub Releases 下载，二进制经 SignPath 代码签名；TTL 宏可自动化重复操作，界面支持多语言文件。",
+    addedAt: "2026-11-17"
   }
 ];
