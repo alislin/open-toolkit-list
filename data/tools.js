@@ -99,5 +99,18 @@ const TOOLS = [
     description: "软件 KVM：一套键鼠控制多台 Mac/Windows 电脑，并同步剪贴板、拖放与音频。",
     notes: "P2P 架构，无需指定主控设备，自动发现局域网设备，流量默认加密。macOS 仅支持 Apple Silicon（14.2+），Windows 需 10 22H2+/11（x64）。从 GitHub Releases 下载安装，SmartScreen 可能提示未知发布者。",
     addedAt: "2026-11-08"
+  },
+  {
+    name: "JarkViewer",
+    url: "https://github.com/jark006/JarkViewer",
+    homepage: "",
+    logo: "assets/logos/jarkviewer.png",
+    category: "图片查看",
+    tags: ["windows", "image-viewer", "raw", "media-player"],
+    status: "in-use",
+    pinned: false,
+    description: "Windows 原生看图软件，支持 HEIC/AVIF/RAW 等海量格式，集编辑标注、批量处理与音视频播放于一体。",
+    notes: "单文件免安装，支持 winget / scoop 安装；EXIF 面板可查看 StableDiffusion / ComfyUI 提示词；资源管理器缩略图需保留 JarkThumbnailProvider.dll 并在设置中注册。",
+    addedAt: "2026-11-17"
   }
 ];
