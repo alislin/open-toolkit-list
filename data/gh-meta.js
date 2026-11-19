@@ -5,7 +5,7 @@
 
 window.GH_META = {
   "BurntSushi/ripgrep": {
-    "stars": 70025,
+    "stars": 70048,
     "language": "Rust",
     "license": "Unlicense",
     "topics": [
@@ -16,12 +16,12 @@ window.GH_META = {
       "grep",
       "recursively-search"
     ],
-    "lastPush": "2026-11-09T20:53:12Z",
+    "lastPush": "2026-11-18T23:20:23Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:55.773Z"
+    "fetchedAt": "2026-11-19T02:08:03.343Z"
   },
   "junegunn/fzf": {
-    "stars": 84249,
+    "stars": 84267,
     "language": "Go",
     "license": "MIT",
     "topics": [
@@ -34,10 +34,10 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-12T01:51:46Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:56.027Z"
+    "fetchedAt": "2026-11-19T02:08:03.638Z"
   },
   "jesseduffield/lazygit": {
-    "stars": 83950,
+    "stars": 83959,
     "language": "Go",
     "license": "MIT",
     "topics": [
@@ -47,10 +47,10 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-18T00:06:12Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:56.288Z"
+    "fetchedAt": "2026-11-19T02:08:03.899Z"
   },
   "httpie/cli": {
-    "stars": 38720,
+    "stars": 38723,
     "language": "Python",
     "license": "BSD-3-Clause",
     "topics": [
@@ -63,10 +63,10 @@ window.GH_META = {
     ],
     "lastPush": "2024-12-17T17:30:35Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:56.583Z"
+    "fetchedAt": "2026-11-19T02:08:04.184Z"
   },
   "excalidraw/excalidraw": {
-    "stars": 135883,
+    "stars": 135924,
     "language": "TypeScript",
     "license": "MIT",
     "topics": [
@@ -77,21 +77,21 @@ window.GH_META = {
       "hacktoberfest",
       "productivity"
     ],
-    "lastPush": "2026-11-17T22:29:17Z",
+    "lastPush": "2026-11-19T00:15:46Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:56.821Z"
+    "fetchedAt": "2026-11-19T02:08:04.412Z"
   },
   "mr-wuliu/wupage": {
-    "stars": 743,
+    "stars": 763,
     "language": "TypeScript",
     "license": "GPL-3.0",
     "topics": [],
-    "lastPush": "2026-11-17T10:04:04Z",
+    "lastPush": "2026-11-18T20:05:50Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:57.093Z"
+    "fetchedAt": "2026-11-19T02:08:04.640Z"
   },
   "oinkvm/oink": {
-    "stars": 2034,
+    "stars": 2169,
     "language": "Rust",
     "license": "GPL-3.0",
     "topics": [
@@ -102,12 +102,12 @@ window.GH_META = {
       "drag-and-drop",
       "keyboard-sharing"
     ],
-    "lastPush": "2026-11-17T11:53:41Z",
+    "lastPush": "2026-11-19T01:42:08Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:57.350Z"
+    "fetchedAt": "2026-11-19T02:08:04.884Z"
   },
   "jark006/JarkViewer": {
-    "stars": 1363,
+    "stars": 1364,
     "language": "C++",
     "license": "GPL-3.0",
     "topics": [
@@ -120,15 +120,15 @@ window.GH_META = {
     ],
     "lastPush": "2026-11-01T21:10:25Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:57.601Z"
+    "fetchedAt": "2026-11-19T02:08:05.094Z"
   },
   "TeraTermProject/teraterm": {
     "stars": 1099,
     "language": "C",
     "license": "NOASSERTION",
     "topics": [],
-    "lastPush": "2026-11-16T15:37:59Z",
+    "lastPush": "2026-11-18T14:27:02Z",
     "archived": false,
-    "fetchedAt": "2026-11-18T02:39:57.851Z"
+    "fetchedAt": "2026-11-19T02:08:05.365Z"
   }
 };
