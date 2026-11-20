@@ -125,5 +125,18 @@ const TOOLS = [
     description: "老牌 Windows 终端模拟器，支持串口、Telnet、SSH 连接，内置 TTL 宏脚本与日志功能。",
     notes: "BSD 许可，Tera Term Pro 2.3 官方公认后继版；安装包从 GitHub Releases 下载，二进制经 SignPath 代码签名；TTL 宏可自动化重复操作，界面支持多语言文件。",
     addedAt: "2026-11-17"
+  },
+  {
+    name: "HerdrDroid",
+    url: "https://github.com/BillJr99/HerdrDroid",
+    homepage: "",
+    logo: "",
+    category: "AI 编程",
+    tags: ["android", "ssh", "ai-agents", "remote-control"],
+    status: "trial",
+    pinned: false,
+    description: "手机端 AI 编码代理遥控器：经 SSH 连入运行 herdr 的电脑，查看状态、应答提问、派发任务。",
+    notes: "实验性软件，从 GitHub Releases 下载 APK 侧载安装；电脑端需运行 herdr 且 SSH 可达（python3 用于聊天/文件视图）；支持 Claude Code、Codex、Grok、Copilot CLI、OpenCode 等十余种代理；密钥与聊天仅存手机，Android Keystore 加密。",
+    addedAt: "2026-11-20"
   }
 ];
